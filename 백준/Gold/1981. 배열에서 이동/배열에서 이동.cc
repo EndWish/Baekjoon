@@ -48,11 +48,17 @@ int main() {
 
 bool Goal(int maxDiff) {
 	// maxDiff만큼 차이나는 범위들을 모두 BFS돌려본다.
+
 	int range[2]{ board[0][0], board[n - 1][n - 1] };
 	sort(range, range + 2);
 
 	int top = range[1], bottom = top - maxDiff;
-	while (bottom <= range[0]) {
+	if (bottom < 0) {	// 필요없는 범위들 최소화 (하한이 0보다 작은경우 제거)
+		top -= bottom;
+		bottom = 0;
+	}
+
+	while (bottom <= range[0] && top <= 200) {
 
 		if (BFS(bottom, top))
 			return true;
@@ -71,8 +77,7 @@ bool BFS(int bottom, int top) {
 	visit[0][0] = true;
 
 	while (!q.empty()) {
-		int x = q.front().first;
-		int y = q.front().second;
+		auto [x, y] = q.front();	// [,]를 이용해서 pair<>값 받아오기
 		q.pop();
 
 		if (x == n - 1 && y == n - 1) {
