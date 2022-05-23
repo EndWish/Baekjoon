@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory.h>
 #include <array>
 #include <vector>
 
@@ -13,15 +14,17 @@ public:
 	int dir = 0;
 
 	CCTV(int r, int c, int type) : r{ r }, c{ c }, type{ type }{};
-	void SetSight() const;
-	void SetSightOneDir(int direction) const;
+	int SetSight() const;
+	int SetSightOneDir(int direction) const;
 
 };
 
 int n, m;
 array<array<int, MAXN>, MAXN> board;
+array<array<bool, MAXN>, MAXN> visit;
 vector<CCTV> cctvs;
 int blindSpot = 64;
+int space = 0;
 
 bool Inside(int r, int c);
 void DFS(vector<CCTV>::iterator it);
@@ -39,7 +42,10 @@ int main() {
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < m; ++j) {
 			cin >> board[i][j];
-			if (1 <= board[i][j] && board[i][j] <= 5) {
+			if (0 == board[i][j]) {
+				++space;
+			}
+			else if (1 <= board[i][j] && board[i][j] <= 5) {
 				cctvs.emplace_back(i, j, board[i][j]);
 			}
 		}
@@ -53,7 +59,9 @@ int main() {
 
 }
 
-void CCTV::SetSightOneDir(int direction) const {
+int CCTV::SetSightOneDir(int direction) const {
+	int result = 0;
+
 	int nr = r, nc = c;
 
 	int dr, dc;
@@ -69,22 +77,26 @@ void CCTV::SetSightOneDir(int direction) const {
 		if (board[nr][nc] == 6)
 			break;
 
-		if (board[nr][nc] == 0)
-			board[nr][nc] = 7;
+		if (board[nr][nc] == 0 && !visit[nr][nc]) {
+			visit[nr][nc] = true;
+			++result;
+		}
 
 		nr += dr;
 		nc += dc;
 	}
+
+	return result;
 }
 
-void CCTV::SetSight() const {
+int CCTV::SetSight() const {
 	switch (type) {
-	case 1: SetSightOneDir(dir); break;
-	case 2: SetSightOneDir(dir); SetSightOneDir((dir + 2) % 4); break;
-	case 3: SetSightOneDir(dir); SetSightOneDir((dir + 1) % 4); break;
-	case 4: SetSightOneDir(dir); SetSightOneDir((dir + 1) % 4); SetSightOneDir((dir + 2) % 4); break;
-	case 5: SetSightOneDir(dir); SetSightOneDir((dir + 1) % 4); SetSightOneDir((dir + 2) % 4); SetSightOneDir((dir + 3) % 4); break;
-	default: break;
+	case 1: return SetSightOneDir(dir);
+	case 2: return SetSightOneDir(dir) + SetSightOneDir((dir + 2) % 4);
+	case 3: return SetSightOneDir(dir) + SetSightOneDir((dir + 1) % 4);
+	case 4: return SetSightOneDir(dir) + SetSightOneDir((dir + 1) % 4) + SetSightOneDir((dir + 2) % 4);
+	case 5: return SetSightOneDir(dir) + SetSightOneDir((dir + 1) % 4) + SetSightOneDir((dir + 2) % 4) + SetSightOneDir((dir + 3) % 4);
+	default: return 0;
 	}
 }
 
@@ -95,31 +107,15 @@ bool Inside(int r, int c) {
 }
 
 int GetBlindSpot() {
-	//borad 리셋
-	for (int i = 0; i < n; ++i) {
-		for (int j = 0; j < m; ++j) {
-			if (board[i][j] == 7) {
-				board[i][j] = 0;
-			}
-		}
-	}
+	//visit 리셋
+	memset(&visit[0][0], false, sizeof(visit));
 
 	//시야 표시
+	int sightSpot = 0;
 	for (const CCTV& cctv : cctvs)
-		cctv.SetSight();
+		sightSpot += cctv.SetSight();
 
-	//PrintBoard();
-
-	// 사각지대의 수 세기
-	int ans = 0;
-	for (int i = 0; i < n; ++i) {
-		for (int j = 0; j < m; ++j) {
-			if (board[i][j] == 0) {
-				++ans;
-			}
-		}
-	}
-	return ans;
+	return space - sightSpot;
 }
 
 void DFS(vector<CCTV>::iterator it) {
