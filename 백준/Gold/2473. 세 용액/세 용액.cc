@@ -25,42 +25,27 @@ int main() {
 
 	sort(v.begin(), v.end());
 
-	vector<tuple<ll, int, int>> v2;	// 두용액의 조합
-	v2.reserve(n * n / 2);
-	for (int i = 0; i < n; ++i)
-		for (int j = i + 1; j < n; ++j)
-			v2.emplace_back(v[i] + v[j], i, j);
-
 	//문제해결
-	ll ansMin = numeric_limits<ll>::max();
-	array<ll, 3> ansValue;
-	for (auto [value, index1, index2] : v2) {
-		int right = distance(v.begin(), lower_bound(v.begin(), v.end(), -value));
-		int left = right - 1;
+	tuple<ll, int, int, int> ans = { numeric_limits<ll>::max(), 0,0,0 };
+	for (int l = 0; l < n - 2; ++l) {	// l번째 용액을 하나 선택하고 나머지 두 용액을 투포인터로 선택한다.
+		int m = l + 1;
+		int r = n - 1;
 
-		while (right == index1 || right == index2) {
-			++right;
-		}
-		while (left == index1 || left == index2) {
-			--left;
-		}
+		while (m < r) {
+			ll sum = v[l] + v[m] + v[r];
+			if (abs(sum) < get<0>(ans))		// 절대값이 더 작으면 정답 갱신
+				ans = { abs(sum), l, m, r };
 
-		ll rightValue = right < n ? value + v[right] : numeric_limits<ll>::max();
-		if (abs(rightValue) < ansMin) {
-			ansMin = abs(rightValue);
-			ansValue = { v[index1], v[index2], v[right] };
-		}
+			if (0 < sum)
+				--r;
+			else
+				++m;
 
-		ll leftValue = 0 <= left ? value + v[left] : numeric_limits<ll>::max();
-		if (abs(leftValue) < ansMin) {
-			ansMin = abs(leftValue);
-			ansValue = { v[index1], v[index2], v[left] };
 		}
 	}
 	
 	//출력
-	sort(ansValue.begin(), ansValue.end());
-	for (ll i : ansValue)
-		cout << i << " ";
+	auto [value, index1, index2, index3] = ans;
+	cout << v[index1] << " " << v[index2] << " " << v[index3];
 
 }
