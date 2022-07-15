@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory.h>
 
 #define ll long long
 #define DIV 1'000'000'000
@@ -6,7 +7,7 @@
 using namespace std;
 
 int n;
-ll dp[101][10][10][10];	// dp[len][a][b][e] : 길이가 len이고 숫자를 a~b를 포함하고 e로 끝나는 수의 개수
+int dp[2][10][10][10];	// dp[이전-이후][a][b][e] : 숫자를 a~b를 포함하고 e로 끝나는 수의 개수
 
 int main() {
 
@@ -20,10 +21,11 @@ int main() {
 	}
 
 	for (int i = 1; i <= 9; ++i)
-		dp[1][i][i][i] = 1;
+		dp[0][i][i][i] = 1;
 
 	//문제해결
 	for (int len = 1; len < n; ++len) {
+		memset(&dp[1], 0, sizeof(int) * 10 * 10 * 10);
 		for (int a = 0; a < 10; ++a) {
 			for (int b = a; b < 10; ++b) {
 				for (int e = a; e <= b; ++e) {
@@ -33,29 +35,31 @@ int main() {
 							continue;
 
 						if (a <= ne[i] && ne[i] <= b) {
-							dp[len + 1][a][b][ne[i]] += dp[len][a][b][e];
-							dp[len + 1][a][b][ne[i]] %= DIV;
+							dp[1][a][b][ne[i]] += dp[0][a][b][e];
+							dp[1][a][b][ne[i]] %= DIV;
 						}
 						else {
 							if (ne[i] < a) {
-								dp[len + 1][ne[i]][b][ne[i]] += dp[len][a][b][e];
-								dp[len + 1][ne[i]][b][ne[i]] %= DIV;
+								dp[1][ne[i]][b][ne[i]] += dp[0][a][b][e];
+								dp[1][ne[i]][b][ne[i]] %= DIV;
 							}
 							else if (b < ne[i]) {
-								dp[len + 1][a][ne[i]][ne[i]] += dp[len][a][b][e];
-								dp[len + 1][a][ne[i]][ne[i]] %= DIV;
+								dp[1][a][ne[i]][ne[i]] += dp[0][a][b][e];
+								dp[1][a][ne[i]][ne[i]] %= DIV;
 							}
 						}
 					}
 				}
 			}
 		}
+
+		memcpy(&dp[0], &dp[1], sizeof(int) * 10 * 10 * 10);
 	}
 
 	//출력
 	ll ans = 0;
 	for (int e = 0; e < 10; ++e)
-		ans = (ans + dp[n][0][9][e]) % DIV;
+		ans = (ans + dp[1][0][9][e]) % DIV;
 
 	cout << ans;
 }
