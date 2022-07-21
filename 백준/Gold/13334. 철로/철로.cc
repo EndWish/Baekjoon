@@ -40,9 +40,8 @@ int main() {
 		int s = otthSortedFirst[i].first;	// 선분 L의 시작하는 점
 		int e = s + d;	// 선분 L의 끝나는 점
 
-		auto p1 = ranges::lower_bound(otthSortedFirst, s, {}, &pii::first);
 		auto p2 = ranges::upper_bound(otthSortedSecond, e, {}, &pii::second);
-		int includeNum = ranges::distance(otthSortedSecond.begin(), p2) - ranges::distance(otthSortedFirst.begin(), p1);
+		int includeNum = ranges::distance(otthSortedSecond.begin(), p2) - i;
 		ans = max(ans, includeNum);
 	}
 
