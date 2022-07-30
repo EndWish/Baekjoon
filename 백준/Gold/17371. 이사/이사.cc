@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <ranges>
-#include <cmath>
 #include <algorithm>
 #include <numeric>
 
@@ -12,7 +11,7 @@ using namespace std;
 int n;
 vector<pdd> points;
 
-double Distance(pdd p1, pdd p2);
+double Distance2(pdd p1, pdd p2);
 
 int main() {
 
@@ -30,10 +29,10 @@ int main() {
 	for (int i = 0; i < n; ++i) {
 
 		auto p = ranges::max_element(points, [i](pdd a, pdd b) {
-			return Distance(points[i], a) < Distance(points[i], b);
+			return Distance2(points[i], a) < Distance2(points[i], b);
 			});
 
-		double distance = Distance(points[i], *p) / 2.0;
+		double distance = Distance2(points[i], *p) / 2.0;
 
 		if (distance < minDistance) {
 			minDistance = distance;
@@ -49,9 +48,9 @@ int main() {
 	
 }
 
-double Distance(pdd p1, pdd p2) {
+double Distance2(pdd p1, pdd p2) {
 	auto [x1, y1] = p1;
 	auto [x2, y2] = p2;
 
-	return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+	return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
 }
