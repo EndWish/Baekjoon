@@ -43,7 +43,7 @@ int main()
 	//문제해결
 	ll ans = 0;
 	for (int i = 1; i <= n; ++i) {
-		ans += (ll)Query(1, 1, n, B[i], n);
+		ans += Query(1, 1, n, B[i], n);
 		Connect(1, 1, n, B[i]);
 	}
 
