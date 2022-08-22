@@ -1,87 +1,72 @@
 #include <iostream>
+#include <string>
 #include <vector>
-#include <span>
-#include <ranges>
-#include <algorithm>
-#include <numeric>
-//#include <format>
 
-#define MAXN 501
-#define INF numeric_limits<int>::max()
-#define pii pair<int,int>
+#define MAX 30'000'000
 
 using namespace std;
 
 int n, m, w;
-vector<pii> edge[MAXN];	// = {코스트, 다음 노드}
-int dp[MAXN];
-vector<pair<pii, int>> checking;
 
-int BellmanFord(int start, int end);
-void BellmanFordCycle();
+struct edge {
+	int s, e, t;
+};
 
-int main() {
-	ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+bool time_travel(int n, vector<edge> edges) {
+	vector<int> dist(n + 1, MAX);
 
-	int tc;
-	cin >> tc;
-	while (tc-- > 0) {
-		//초기화,입력값 받기
-		for (int i = 0; i < MAXN; ++i) {
-			edge[i].clear();
+	int s, e, t;
+	dist[1] = 0;
+	for (int i = 1; i < n; i++) {
+		for (int j = 0; j < edges.size(); j++) {
+			s = edges[j].s;
+			e = edges[j].e;
+			t = edges[j].t;
+			if (dist[e] > dist[s] + t) {
+				dist[e] = dist[s] + t;
+			}
 		}
-		checking.clear();
+	}
+	for (int j = 0; j < edges.size(); j++) {
+		s = edges[j].s;
+		e = edges[j].e;
+		t = edges[j].t;
+		if (dist[e] > dist[s] + t) {
+			return true;
+		}
+	}
 
+	return false;
+}
+
+int main()
+{
+	cin.tie(NULL); cout.tie(NULL); ios_base::sync_with_stdio(false);
+
+	int TC;
+	cin >> TC;
+
+	int s, e, t;
+	while (TC > 0) {
 		cin >> n >> m >> w;
-		int s, e, t;
-		for (int i = 0; i < m; ++i) {
+
+		vector<edge> edges;
+
+		for (int i = 0; i < m; i++) {
 			cin >> s >> e >> t;
-			edge[s].emplace_back(t, e);
-			edge[e].emplace_back(t, s);
+			edges.push_back({ s,e,t });
+			edges.push_back({ e,s,t });
 		}
-
-		//문제해결
-
-		for (int i = 0; i < w; ++i) {
+		for (int i = 0; i < w; i++) {
 			cin >> s >> e >> t;
-			edge[s].emplace_back(-t, e);
-			checking.push_back({ { s, e }, t });
+			edges.push_back({ s,e,-t });
 		}
 
-		bool possible = false;
-		for (auto [uv, t] : checking) {
-			if (BellmanFord(uv.second, uv.first) < t) {
-				possible = true;
-				break;
-			}
-		}
+		if (time_travel(n, edges)) cout << "YES\n";
+		else cout << "NO\n";
 
-		//출력
-		if (possible) {
-			cout << "YES\n";
-		}
-		else {
-			cout << "NO\n";
-		}
+		TC--;
 	}
 
-}
-
-int BellmanFord(int start, int end) {
-	ranges::fill(span(dp), INF);
-	dp[start] = 0;
-	for (int i = 0; i < n - 1; ++i) {	// n-1번 수행
-		BellmanFordCycle();
-	}
-	return dp[end];
-}
-
-void BellmanFordCycle() {
-	for (int node = 1; node <= n; ++node) {	// 모든 간선들을 순환하면서
-		for (auto [cost, nextNode] : edge[node]) {
-			if (dp[node] != INF && dp[node] + cost < dp[nextNode]) {
-				dp[nextNode] = dp[node] + cost;	// 최단거리 업데이트
-			}
-		}
-	}
+	return 0;
 }
