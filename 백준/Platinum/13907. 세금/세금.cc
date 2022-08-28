@@ -39,18 +39,25 @@ int main() {
 	Dijkstra(s);
 
 	//출력
-	cout << *ranges::min_element(dp[d]) << "\n";
+	int pos = ranges::min_element(dp[d]) - dp[d];
+	cout << dp[d][pos] << "\n";
 	int p;
 	int plusCost = 0;
 	for (int i = 0; i < k; ++i) {
 		cin >> p;
 		plusCost += p;
+
 		int ans = INF;
-		for (int via = 0; via < n; ++via) {
+		int nextPos = pos;
+		for (int via = 0; via <= pos; ++via) {
 			if (dp[d][via] != INF) {
-				ans = min(ans, dp[d][via] + via * plusCost);
+				if (dp[d][via] + via * plusCost < ans) {
+					ans = dp[d][via] + via * plusCost;
+					nextPos = via;
+				}
 			}
 		}
+		pos = nextPos;
 		cout << ans << "\n";
 	}
 
