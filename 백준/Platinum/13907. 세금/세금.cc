@@ -81,8 +81,14 @@ void Dijkstra(int start) {
 
 		for (int i = 0; i < edge[node].size(); ++i) {
 			auto[cost, nextNode] = edge[node][i];
-			if (dp[node][via] + cost < dp[nextNode][via + 1]) {
-				dp[nextNode][via + 1] = dp[node][via] + cost;
+			int dist = dp[node][via] + cost;
+			if (dist < dp[nextNode][via + 1]) {
+				for (int j = 0; j < via + 1; ++j) {
+					if (dp[nextNode][j] < dist)
+						continue;
+				}
+
+				dp[nextNode][via + 1] = dist;
 				pq.emplace(-dp[nextNode][via + 1], nextNode, via + 1);
 			}
 		}
