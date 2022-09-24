@@ -30,12 +30,13 @@ int main() {
 		for (int s = 1; s <= n; ++s) {
 			if (via == s || edge[s][via] == 0)
 				continue;
-			for (int e = 1; e <= n; ++e) {
+			for (int e = s + 1; e <= n; ++e) {
 				if (via == e || s == e || edge[via][e] == 0)
 					continue;
 
 				if (edge[s][via] == edge[via][e]) {
 					edge[s][e] = edge[s][via];
+					edge[e][s] = -edge[s][e];
 				}
 			}
 		}
