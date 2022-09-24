@@ -11,12 +11,7 @@
 using namespace std;
 
 int n, k, s;
-vector<int> asendingEdge[MAXN];
-vector<int> desendingEdge[MAXN];
-bool visit[MAXN];
-
-int Comp(int a, int b);
-bool DFS(int node, vector<int>* edge, int targetNode);
+int edge[MAXN][MAXN];
 
 int main() {
 	ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
@@ -26,38 +21,31 @@ int main() {
 	int a, b;
 	for (int i = 0; i < k; ++i) {
 		cin >> a >> b;
-		asendingEdge[a].push_back(b);
-		desendingEdge[b].push_back(a);
+		edge[a][b] = -1;
+		edge[b][a] = 1;
 	}
 
 	//문제해결
-	cin >> s;
-	for (int i = 0; i < s; ++i) {
-		cin >> a >> b;
-		cout << Comp(a, b) << "\n";
+	for (int via = 1; via <= n; ++via) {
+		for (int s = 1; s <= n; ++s) {
+			if (via == s || edge[s][via] == 0)
+				continue;
+			for (int e = 1; e <= n; ++e) {
+				if (via == e || s == e || edge[via][e] == 0)
+					continue;
+
+				if (edge[s][via] == edge[via][e]) {
+					edge[s][e] = edge[s][via];
+				}
+			}
+		}
 	}
 
 	//출력
-
-}
-
-int Comp(int a, int b) {
-	fill_n(visit, MAXN, false);
-	if (DFS(a, asendingEdge, b))
-		return -1;
-	if (DFS(a, desendingEdge, b))
-		return 1;
-	return 0;
-}
-
-bool DFS(int node, vector<int>* edge, int targetNode) {
-	visit[node] = true;
-	for (int nextNode : edge[node]) {
-		if (nextNode == targetNode)
-			return true;
-
-		if (!visit[nextNode] && DFS(nextNode, edge, targetNode))
-			return true;
+	cin >> s;
+	for (int i = 0; i < s; ++i) {
+		cin >> a >> b;
+		cout << edge[a][b] << "\n";
 	}
-	return false;
+
 }
