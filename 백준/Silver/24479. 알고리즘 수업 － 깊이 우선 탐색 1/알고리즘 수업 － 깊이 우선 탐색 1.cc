@@ -9,7 +9,7 @@
 using namespace std;
 
 int n, m, r;
-array<set<int>, 100'001> edges;
+array<vector<int>, 100'001> edges;
 array<bool, 100'001> visit;
 array<int, 100'001> ans;
 
@@ -25,8 +25,11 @@ int main() {
 	for (int i = 0; i < m; ++i) {
 		int u, v;
 		cin >> u >> v;
-		edges[u].insert(v);
-		edges[v].insert(u);
+		edges[u].push_back(v);
+		edges[v].push_back(u);
+	}
+	for (int i = 1; i <= n; ++i) {
+		ranges::sort(edges[i]);
 	}
 
 	//문제해결
