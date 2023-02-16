@@ -16,6 +16,7 @@ int n, q, k;
 array<vector<int>, MAXN> edges;
 array<bool, MAXN> visit;
 array<bool, MAXN> s;
+vector<int> start;
 
 ll DFS(int node);
 
@@ -34,24 +35,33 @@ int main() {
 
 	//문제해결
 	for (int i = 0; i < q; ++i) {
-		fill_n(&s[0], MAXN, false);
-		fill_n(&visit[0], MAXN, false);
+		//fill_n(&s[0], MAXN, false);
+		//fill_n(&visit[0], MAXN, false);
+		start.clear();
 
 		cin >> k;
 		for (int j = 0; j < k; ++j) {
 			int node;
 			cin >> node;
 			s[node] = true;
+			start.push_back(node);
 		}
 
 		ll ans = 0;
-		for (int node = 1; node <= n; ++node) {
+		for (int node : start) {
 			if (s[node] && !visit[node]) {
 				ll nMember = DFS(node);
 				ans += nMember * (nMember - 1) / 2;
 			}
 		}
 		cout << ans << "\n";
+
+		// 초기화
+		for (int node : start) {
+			visit[node] = false;
+			s[node] = false;
+		}
+
 	}
 
 }
