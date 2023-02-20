@@ -26,6 +26,7 @@ void MakeGraph();
 void ModifyCapacity(int x);
 int GetNode(int r, int c);
 int Edmonds_Karp();
+int GetMaxValue();
 
 int main() {
 	ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
@@ -39,7 +40,7 @@ int main() {
 		int mid = (s + e) / 2;
 		ModifyCapacity(mid);
 		if (Edmonds_Karp() == sum) {
-			e = mid;
+			e = min(mid, GetMaxValue());
 		}
 		else {
 			s = mid + 1;
@@ -172,4 +173,16 @@ int Edmonds_Karp() {
 
 
 	return totalFlow;
+}
+int GetMaxValue() {
+	int result = 0;
+	for (int r = 1; r <= n; ++r) {
+		for (int c = 1; c <= n; ++c) {
+			int otherNode = GetNode(r, n + 1);
+			int node = GetNode(r, c);
+
+			result = max(result, flow[otherNode][node]);
+		}
+	}
+	return result;
 }
