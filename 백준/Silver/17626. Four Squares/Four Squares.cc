@@ -23,33 +23,37 @@ int main() {
 }
 
 int Solved() {
-	unordered_set<int> s1;
+	vector<int> nums;
 	for (int i = 1; i <= n; ++i) {
 		int num = i * i;
 		if (num <= n)
-			s1.insert(num);
+			nums.push_back(num);
+		else
+			break;
 	}
 
 	// 1. 1개로 표현이 가능한 경우
-	if (s1.contains(n))
+	if (ranges::binary_search(nums, n))
 		return 1;
 
 	// 2. 2개로 표현이 가능한 경우
-	unordered_set<int> s2;
-	for (int num1 : s1) {
-		for (int num2 : s1) {
-			int num = num1 + num2;
-			if (num <= n)
-				s2.insert(num);
-		}
-	}
-	if (s2.contains(n))
-		return 2;
+	for (int num : nums)
+		if (ranges::binary_search(nums, n - num))
+			return 2;
 
 	// 3. 3개로 표현이 가능한 경우
-	for (int num1 : s1) {
-		if (s2.contains(n - num1))
-			return 3;
+	for (int num : nums) {
+		int findNum = n - num;
+		int s = 0, e = nums.size() - 1;
+		while (s <= e) {
+			int sum = nums[s] + nums[e];
+			if (sum == findNum)
+				return 3;
+			if (sum < findNum)
+				++s;
+			else
+				--e;
+		}
 	}
 
 	return 4;
