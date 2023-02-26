@@ -7,18 +7,14 @@
 using namespace std;
 
 #define ll long long
+#define Point pair<int,int>
 
-struct Point {
-	int x, y;
-
-	Point();
-	Point(int _x, int _y);
-
-	Point operator-(const Point& other) const;
-	bool operator<(const Point& other) const;
-	friend ostream& operator<<(ostream& os, const Point& point);
-
-};
+Point operator-(const Point& a, const Point& b) {
+	return { a.first - b.first, a.second - b.second };
+}
+ostream& operator<<(ostream& os, const Point& p) {
+	return os << "(" << p.first << "," << p.second << ")";
+}
 
 int t, n, m;
 vector<Point> points1, points2;
@@ -53,15 +49,6 @@ int main() {
 			swap(points1, points2);
 		points1 = ConvexHull(points1);
 		points2 = ConvexHull(points2);
-
-		//cout << "points1 : ";
-		//for (auto p : points1)
-		//	cout << p << " ";
-		//cout << "\n";
-		//cout << "points2 : ";
-		//for (auto p : points2)
-		//	cout << p << " ";
-		//cout << "\n";
 
 		// 점이 하나씩만 있을 경우
 		if (points1.size() == 1) {
@@ -112,28 +99,8 @@ int main() {
 
 }
 
-Point::Point() {
-	x = 0;
-	y = 0;
-}
-Point::Point(int _x, int _y){
-	x = _x;
-	y = _y;
-}
-Point Point::operator-(const Point& other) const {
-	return Point(x - other.x, y - other.y);
-}
-bool Point::operator<(const Point& other) const {
-	return x == other.x ? y < other.y : x < other.x;
-}
-
-ostream& operator<<(ostream& os, const Point& point) {
-	return os << "(" << point.x << "," << point.y << ")";
-	// // O: 여기에 return 문을 삽입합니다.
-}
-
 int CCW(const Point& v1, const Point& v2) {
-	return v1.x * v2.y - v1.y * v2.x;
+	return v1.first * v2.second - v1.second * v2.first;
 }
 
 int CCW(const Point& p1, const Point& p2, const Point& p3) {
@@ -218,7 +185,8 @@ bool Contain(const Point& a, const Point& b, const Point& p, bool checkZeroCCW) 
 	if (!checkZeroCCW && CCW(a, b, p) != 0)
 		return false;
 	// 점p가 x값과 y값 전부 그 사이에 포함된다면 포함되는 것이다.
-	if (min(a.x, b.x) <= p.x && p.x <= max(a.x, b.x) && min(a.y, b.y) <= p.y && p.y <= max(a.y, b.y))
+	if (min(a.first, b.first) <= p.first && p.first <= max(a.first, b.first) &&
+		min(a.second, b.second) <= p.second && p.second <= max(a.second, b.second))
 		return true;
 	return false;
 }
