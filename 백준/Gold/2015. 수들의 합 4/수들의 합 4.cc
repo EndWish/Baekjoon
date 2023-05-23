@@ -35,8 +35,9 @@ int main() {
 			++ans;
 		}
 
-		if (prevSums.contains(sum - k)) {
-			ans += prevSums[sum - k];
+		auto it = prevSums.find(sum - k);
+		if (it != prevSums.end()) {
+			ans += it->second;
 		}
 
 		++prevSums[sum];
