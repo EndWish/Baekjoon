@@ -12,18 +12,22 @@ int n;
 vector<int> nums;
 vector<unordered_map<int, int>> factors;
 unordered_map<int, int> allFactor;
+vector<int> primes;
 
 unordered_map<int, int> Factorizations(int num);
+vector<int> GetEratosthenesSieve(int num);
 
 int main() {
 
 	ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
 
+	primes = GetEratosthenesSieve(1'000'000);
+
 	cin >> n;
 	nums.assign(n, {});
 	for (int& num : nums)
 		cin >> num;
-
+	
 	for (int num : nums) {
 		unordered_map<int, int> factor = Factorizations(num);
 		for (auto [num, cnt] : factor)
@@ -50,14 +54,35 @@ int main() {
 
 unordered_map<int, int> Factorizations(int num) {
 	unordered_map<int, int> result;
-	for (int i = 2; 1 < num; ) {
-		if (num % i == 0) {
-			++result[i];
-			num /= i;
+	for (int prime : primes) {
+		while (num % prime == 0) {
+			num /= prime;
+			++result[prime];
 		}
-		else {
-			++i;
-		}
+		if (num == 1)
+			break;
 	}
 	return result;
+}
+
+vector<int> GetEratosthenesSieve(int num) {
+	vector<int> primes;
+	primes.reserve(num / 10);
+
+	vector<bool> check(num + 1, true);
+	for (long long i = 2; i * i <= num; ++i) {
+		if (check[i]) {
+			for (int j = i * i; j <= num; j += i) {
+				check[j] = false;
+			}
+		}
+	}
+
+	for (int i = 2; i <= num; ++i) {
+		if (check[i]) {
+			primes.push_back(i);
+		}
+	}
+
+	return primes;
 }
