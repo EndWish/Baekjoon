@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <ranges>
 #include <numeric>
+#include <cmath>
 
 using namespace std;
 
@@ -54,19 +55,8 @@ int DP(int use, int gap) {
 
 	int h = heights[use];
 
-	// 1. 아무것도 사용하지 않은 경우
-	dp[use][gap] = DP(use - 1,gap);
-
-	// 2. 탑에 쌓는 경우
-	// 2-1. 낮은 탑에 쌓은 경우
-	dp[use][gap] = max(dp[use][gap], DP(use - 1,gap + h));
-	// 2-2. 높은 탑에 쌓은 경우
-	if (gap < h) {	// 쌓아서 높은 탑이 된 경우
-		dp[use][gap] = max(dp[use][gap], DP(use - 1,h - gap) + gap);
-	}
-	else {	// 워래 높은 탑에 쌓아서 더 gap이 커진 경우
-		dp[use][gap] = max(dp[use][gap], DP(use - 1, gap - h) + h);
-	}
+	// 아무것도 사용하지 않은 경우 vs 탑에 쌓는 경우(낮은 탑에 쌓은 경우 vs 높은 탑에 쌓은 경우)
+	dp[use][gap] = max({ DP(use - 1, gap), DP(use - 1, gap + h), DP(use - 1, abs(gap - h)) + (gap < h ? gap : h) });
 	
 	return dp[use][gap];
 }
