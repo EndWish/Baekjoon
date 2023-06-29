@@ -28,13 +28,13 @@ vector<int> Fail(const string& str) {
 
 	int j = 0;
 	for (int i = 1; i < str.size(); ++i) {
-		j = failure[i - 1] + 1;
 		while (j > 0 && str[j] != str[i]) {
 			j = failure[j - 1] + 1;
 		}
 
 		if (str[j] == str[i]) {
 			failure[i] = j;
+			++j;
 		}
 		else {
 			failure[i] = -1;
